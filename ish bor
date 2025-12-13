@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ish Bor - Demo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2E86C1;
+            --secondary: #1ABC9C;
+            --dark: #2C3E50;
+            --light: #ECF0F1;
+            --warning: #F39C12;
+            --danger: #E74C3C;
+            --success: #27AE60;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 2.2rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        nav a:hover, .active {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem 0;
+            min-height: calc(100vh - 180px);
+        }
+
+        .hero {
+            background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)), url('https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 4rem 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .btn-light {
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid #ddd;
+        }
+
+        .btn-edit {
+            background-color: var(--warning);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn-delete {
+            background-color: var(--danger);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            margin-left: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Sections */
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--dark);
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .service-card {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+
+        .service-card.my-job {
+            border: 2px solid var(--primary);
+            cursor: default;
+        }
+
+        .service-card.my-job:hover {
+            transform: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .service-card.paid .service-icon {
+            background: linear-gradient(135deg, var(--success), #2ECC71);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .service-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .service-price {
+            color: var(--success);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .service-hidden-info {
+            display: none;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed #ddd;
+        }
+
+        .service-card.paid .service-hidden-info {
+            display: block;
+        }
+
+        .service-card.my-job .service-hidden-info {
+            display: block;
+        }
+
+        .hidden-info-label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .hidden-info-value {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        /* Map */
+        #map {
+            height: 300px;
+            border-radius: 10px;
+            margin-top: 1rem;
+            border: 1px solid #ddd;
+        }
+
+        /* Chat */
+        .chat-container {
+            display: flex;
+            height: 500px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .chat-contacts {
+            width: 30%;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+        }
+
+        .chat-contact {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s;
+        }
+
+        .chat-contact:hover, .chat-contact.active {
+            background: #f5f7fa;
+        }
+
+        .chat-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .chat-messages {
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 1rem;
+            border-bottom: 1px solid #ddd;
+            background: #f9f9f9;
+            font-weight: 600;
+        }
+
+        .messages-area {
+            flex-grow: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin-bottom: 5px;
+        }
+
+        .message-outgoing {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message-incoming {
+            align-self: flex-start;
+            background: #eee;
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 1rem;
+            border-top: 1px solid #ddd;
+            background: #f9f9f9;
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            margin-right: 10px;
+        }
+
+        /* Profile */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .profile-info h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 10px;
+            min-width: 100px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .balance-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        /* Payment Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            padding: 2rem;
+            animation: modalFade 0.3s;
+        }
+
+        @keyframes modalFade {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .payment-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .payment-description {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #666;
+        }
+
+        /* Balance Top-up Modal */
+        .topup-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .topup-option {
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .topup-option:hover {
+            border-color: var(--primary);
+        }
+
+        .topup-option.selected {
+            border-color: var(--primary);
+            background: rgba(46, 134, 193, 0.1);
+        }
+
+        .topup-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .chat-container {
+                flex-direction: column;
+                height: 600px;
+            }
+            
+            .chat-contacts, .chat-messages {
+                width: 100%;
+            }
+            
+            .chat-contacts {
+                height: 40%;
+            }
+            
+            .chat-messages {
+                height: 60%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-wrap: wrap;
+            }
+            
+            nav {
+                order: 3;
+                width: 100%;
+                margin-top: 1rem;
+                display: none;
+            }
+            
+            nav.active {
+                display: block;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            nav a {
+                display: block;
+                padding: 0.8rem 1rem;
+                border-radius: 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .services-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .topup-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Demo notification */
+        .demo-notice {
+            background: var(--warning);
+            color: white;
+            padding: 0.5rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+        
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .job-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+    </style>
+    
+    <script>
+        // Global functions
+        window.showPaymentModal = function(serviceId, serviceTitle) {
+            window.currentServiceId = serviceId;
+            window.currentServiceTitle = serviceTitle;
+            document.getElementById('paymentModal').classList.add('active');
+        };
+        
+        window.closePaymentModal = function() {
+            document.getElementById('paymentModal').classList.remove('active');
+            window.currentServiceId = null;
+            window.currentServiceTitle = null;
+        };
+        
+        window.showTopupModal = function() {
+            document.getElementById('topupModal').classList.add('active');
+        };
+        
+        window.closeTopupModal = function() {
+            document.getElementById('topupModal').classList.remove('active');
+        };
+        
+        window.selectTopupAmount = function(amount) {
+            document.querySelectorAll('.topup-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            event.currentTarget.classList.add('selected');
+            document.getElementById('selectedAmount').textContent = amount;
+        };
+        
+        window.processPayment = function() {
+            const currentBalance = parseInt(document.getElementById('userBalance').textContent.replace(/,/g, ''));
+            
+            if (currentBalance >= 1000) {
+                // Ayirish
+                const newBalance = currentBalance - 1000;
+                document.getElementById('userBalance').textContent = newBalance.toLocaleString('uz-UZ');
+                
+                // E'lonni "to'langan" deb belgilash
+                const serviceCard = document.querySelector(`.service-card[data-id="${window.currentServiceId}"]:not(.my-job)`);
+                if (serviceCard) {
+                    serviceCard.classList.add('paid');
+                    
+                    // Yashirin ma'lumotlarni ko'rsatish
+                    const hiddenInfo = serviceCard.querySelector('.service-hidden-info');
+                    hiddenInfo.style.display = 'block';
+                }
+                
+                alert('Toʻlov muvaffaqiyatli amalga oshirildi! 1,000 UZS hisobingizdan ayirildi.\nEndi ish beruvchining shaxsiy maʼlumotlarini koʻrishingiz mumkin.');
+                closePaymentModal();
+                
+                // Chatni faollashtirish
+                document.querySelectorAll('.chat-contact').forEach(contact => {
+                    contact.onclick = function() {
+                        const chatId = this.getAttribute('data-chat-id');
+                        selectChat(chatId);
+                    };
+                });
+                
+            } else {
+                closePaymentModal();
+                alert('Hisobingizda yetarli mablagʻ mavjud emas. Minimal 1,000 UZS bilan hisobingizni toʻldiring.');
+                showTopupModal();
+            }
+        };
+        
+        window.processTopup = function() {
+            const selectedAmount = parseInt(document.getElementById('selectedAmount').textContent);
+            const currentBalance = parseInt(document.getElementById('userBalance').textContent.replace(/,/g, ''));
+            const newBalance = currentBalance + selectedAmount;
+            
+            document.getElementById('userBalance').textContent = newBalance.toLocaleString('uz-UZ');
+            
+            alert(`${selectedAmount.toLocaleString('uz-UZ')} UZS hisobingizga muvaffaqiyatli qoʻshildi!`);
+            closeTopupModal();
+        };
+        
+        window.switchSection = function(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Add active class to corresponding nav link
+            const navLink = document.querySelector(`nav a[href="#${sectionId}"]`);
+            if (navLink) {
+                navLink.classList.add('active');
+            }
+            
+            // Close mobile menu if open
+            document.getElementById('mainNav').classList.remove('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        };
+        
+        window.viewServiceDetails = function(serviceId, isMyJob = false) {
+            if (isMyJob) {
+                // O'z e'loni - to'lovsiz ochiladi
+                const service = myJobs.find(s => s.id === serviceId);
+                if (service) {
+                    alert(`"${service.title}" e'loningiz.\nNarxi: ${service.price}\nTavsifi: ${service.description}\n\nBu sizning e'loningiz, shuning uchun to'lov talab qilinmaydi.`);
+                }
+                return;
+            }
+            
+            // Boshqalar e'loni - to'lov talab qilinadi
+            const services = [
+                { id: 1, title: "Bolalar enagasi", icon: "fas fa-baby", price: "800,000 UZS", description: "Bolalar parvarishi va g'amxo'rligi" },
+                { id: 2, title: "Duradgor", icon: "fas fa-hammer", price: "1,200,000 UZS", description: "Uy-joy ta'mirlash va mebel yasash" },
+                { id: 3, title: "Dasturchi", icon: "fas fa-code", price: "5,000,000 UZS", description: "Web va mobil ilovalar yaratish" },
+                { id: 4, title: "Sartarosh", icon: "fas fa-cut", price: "30,000 UZS", description: "Soch olish va soch turmagi" },
+                { id: 5, title: "Oshpaz", icon: "fas fa-utensils", price: "500,000 UZS", description: "To'y va bazmlar uchun ovqat tayyorlash" },
+                { id: 6, title: "Haydovchi", icon: "fas fa-car", price: "2,500,000 UZS", description: "Shaxsiy haydovchi yoki taksi" },
+                { id: 7, title: "Elektrik", icon: "fas fa-bolt", price: "400,000 UZS", description: "Elektr tarmoqlarini ta'mirlash" },
+                { id: 8, title: "Suvchi", icon: "fas fa-faucet", price: "350,000 UZS", description: "Suv o'tkazish tizimlari" },
+            ];
+            
+            const service = services.find(s => s.id === serviceId);
+            if (service) {
+                showPaymentModal(serviceId, service.title);
+            }
+        };
+        
+        window.editJob = function(jobId) {
+            const job = myJobs.find(j => j.id === jobId);
+            if (job) {
+                alert(`"${job.title}" e'lonini tahrirlash.\n\nHaqiqiy loyihada bu yerda e'lonni tahrirlash formasi ochiladi.\n\nJoriy ma'lumotlar:\nNomi: ${job.title}\nNarxi: ${job.price}\nTavsifi: ${job.description}`);
+                
+                // Demo uchun - yangi nom so'raymiz
+                const newTitle = prompt("E'lon nomini o'zgartiring:", job.title);
+                if (newTitle && newTitle.trim() !== "") {
+                    job.title = newTitle;
+                    loadMyJobs();
+                    alert("E'lon muvaffaqiyatli o'zgartirildi!");
+                }
+            }
+        };
+        
+        window.deleteJob = function(jobId) {
+            if (confirm("Bu e'loni o'chirishni xohlaysizmi?")) {
+                const index = myJobs.findIndex(j => j.id === jobId);
+                if (index !== -1) {
+                    myJobs.splice(index, 1);
+                    loadMyJobs();
+                    alert("E'lon muvaffaqiyatli o'chirildi!");
+                }
+            }
+        };
+        
+        window.selectChat = function(chatId) {
+            document.querySelectorAll('.chat-contact').forEach(contact => {
+                contact.classList.remove('active');
+            });
+            
+            event.currentTarget.classList.add('active');
+            
+            // Update chat header
+            const chatUser = event.currentTarget.querySelector('div:nth-child(2) div:first-child').textContent;
+            const chatTopic = event.currentTarget.querySelector('div:nth-child(2) div:nth-child(2)').textContent;
+            
+            document.getElementById('chatUserName').textContent = chatUser;
+            document.getElementById('chatUserName').nextElementSibling.textContent = chatTopic;
+            
+            // Clear messages area
+            const messagesArea = document.getElementById('messagesArea');
+            messagesArea.innerHTML = '';
+            
+            // Add sample messages based on chat
+            if (chatId === "1") {
+                messagesArea.innerHTML = `
+                    <div class="message message-incoming">
+                        Assalomu alaykum! Sizning e'loningizni ko'rdim. Men bu ishni qilishim mumkin.
+                    </div>
+                    <div class="message message-outgoing">
+                        Salom! Qancha haq so'raysiz?
+                    </div>
+                    <div class="message message-incoming">
+                        Ish haqi 2,000,000 so'm. 3 kunda tugataman.
+                    </div>
+                    <div class="message message-outgoing">
+                        Kelishdik. Ertaga soat 10:00 da keling.
+                    </div>
+                `;
+            } else if (chatId === "2") {
+                messagesArea.innerHTML = `
+                    <div class="message message-incoming">
+                        Assalomu alaykum! Men bolalar enagasi ishini qilaman. 10 yillik tajribam bor.
+                    </div>
+                    <div class="message message-outgoing">
+                        Yaxshi. Qaysi vaqtlarda ishlaysiz?
+                    </div>
+                    <div class="message message-incoming">
+                        Kuniga 8 soat, haftada 6 kun. Oylik 800,000 so'm.
+                    </div>
+                `;
+            } else {
+                messagesArea.innerHTML = `
+                    <div class="message message-incoming">
+                        Salom! Dasturchi yollash haqidagi e'loningizni ko'rdim.
+                    </div>
+                    <div class="message message-outgoing">
+                        Qanday texnologiyalarni bilasiz?
+                    </div>
+                    <div class="message message-incoming">
+                        JavaScript, React, Node.js, Python. Loyiha asosida ishlayman.
+                    </div>
+                `;
+            }
+            
+            // Scroll to bottom
+            setTimeout(() => {
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+            }, 100);
+        };
+        
+        window.sendMessage = function() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                const messagesArea = document.getElementById('messagesArea');
+                messagesArea.innerHTML += `
+                    <div class="message message-outgoing">
+                        ${message}
+                    </div>
+                `;
+                
+                input.value = '';
+                
+                // Scroll to bottom
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+                
+                // Simulate reply after 1 second
+                setTimeout(() => {
+                    const replies = [
+                        "Qancha vaqtda tugatasiz?",
+                        "Narxni kamaytirish mumkinmi?",
+                        "Keling, kelishamiz.",
+                        "Batafsil ma'lumot bering."
+                    ];
+                    
+                    const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                    
+                    messagesArea.innerHTML += `
+                        <div class="message message-incoming">
+                            ${randomReply}
+                        </div>
+                    `;
+                    
+                    // Scroll to bottom again
+                    messagesArea.scrollTop = messagesArea.scrollHeight;
+                }, 1000);
+            }
+        };
+        
+        window.useCurrentLocation = function() {
+            alert('DEMO: GPS orqali joylashuv aniqlanmoqda...\nHaqiqiy loyihada bu foydalanuvchi joylashuvini oladi.');
+        };
+        
+        window.openMapModal = function() {
+            alert('DEMO: Xarita ochiladi va joylashuv belgilashingiz mumkin.\nHaqiqiy loyihada Leaflet/Google Maps integratsiyasi ishlatiladi.');
+        };
+    </script>
+</head>
+<body>
+    <!-- Demo Notice -->
+    <div class="demo-notice">
+        Bu "Ish Bor" loyihasining DEMO versiyasi. Faqat ko'rinish va interfeysni ko'rsatadi.
+    </div>
+    
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-briefcase"></i>
+                <span>Ish Bor</span>
+            </div>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <nav id="mainNav">
+                <ul>
+                    <li><a href="javascript:void(0)" onclick="switchSection('home')" class="active"><i class="fas fa-home"></i> Asosiy</a></li>
+                    <li><a href="javascript:void(0)" onclick="switchSection('services')"><i class="fas fa-concierge-bell"></i> Xizmatlar</a></li>
+                    <li><a href="javascript:void(0)" onclick="switchSection('post')"><i class="fas fa-plus-circle"></i> E'lon berish</a></li>
+                    <li><a href="javascript:void(0)" onclick="switchSection('chat')"><i class="fas fa-comments"></i> Chat</a></li>
+                    <li><a href="javascript:void(0)" onclick="switchSection('profile')"><i class="fas fa-user"></i> Profil</a></li>
+                </ul>
+            </nav>
+            
+            <div class="user-menu">
+                <div class="user-avatar">A</div>
+                <span>Azizbek</span>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content container">
+        <!-- Home Section -->
+        <section id="home" class="section active-section">
+            <div class="hero">
+                <h1>O'zingizga mos ish toping yoki xodim yollang</h1>
+                <p>O'zbekistondagi eng yirik ish va xizmatlar platformasi. 1000 dan ortiq ish beruvchi va 5000+ ish izlovchi biz bilan.</p>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="switchSection('services')">
+                        <i class="fas fa-search"></i> Ish izlash
+                    </button>
+                    <button class="btn btn-secondary" onclick="switchSection('post')">
+                        <i class="fas fa-bullhorn"></i> E'lon berish
+                    </button>
+                    <button class="btn btn-outline" onclick="showTopupModal()">
+                        <i class="fas fa-wallet"></i> Hisobni to'ldirish
+                    </button>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">Mashhur xizmatlar</h2>
+                <div class="services-grid" id="servicesPreview">
+                    <!-- Services will be loaded by JavaScript -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Services Section -->
+        <section id="services" class="section" style="display: none;">
+            <div class="section-header">
+                <h2 class="section-title">Barcha xizmatlar</h2>
+                <div>
+                    <input type="text" class="form-control" placeholder="Xizmat qidirish..." style="width: 300px;">
+                </div>
+            </div>
+            
+            <div class="services-grid" id="allServices">
+                <!-- All services will be loaded by JavaScript -->
+            </div>
+        </section>
+        
+        <!-- Post Job Section -->
+        <section id="post" class="section" style="display: none;">
+            <h2 class="section-title">Yangi e'lon berish</h2>
+            
+            <form id="jobForm">
+                <div class="form-group">
+                    <label class="form-label">Ish nomi *</label>
+                    <input type="text" class="form-control" placeholder="Misol: Duradgor, Enaga, Dasturchi" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Ish tavsifi *</label>
+                    <textarea class="form-control" rows="5" placeholder="Ishning batafsil tavsifini yozing..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Ish turi</label>
+                    <select class="form-control">
+                        <option>Vaqtincha ish</option>
+                        <option>Doimiy ish</option>
+                        <option>Loyiha asosida</option>
+                        <option>Uydan ishlash</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Ish haqi (so'mda)</label>
+                    <input type="number" class="form-control" placeholder="Misol: 1000000">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Joylashuv</label>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline" onclick="useCurrentLocation()">
+                            <i class="fas fa-location-arrow"></i> Avtomatik joylashuv
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="openMapModal()">
+                            <i class="fas fa-map-marker-alt"></i> Xaritadan tanlash
+                        </button>
+                    </div>
+                    <div id="map" style="display: none;"></div>
+                    <input type="text" class="form-control mt-2" placeholder="Manzilni qo'lda kiriting" id="addressInput">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Telefon raqamingiz</label>
+                    <input type="tel" class="form-control" value="+998 90 123 45 67" readonly>
+                    <small style="color: #666;">Telefon raqamingiz profil ma'lumotlaridan olinadi</small>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">
+                    <i class="fas fa-paper-plane"></i> E'lonni joylash
+                </button>
+            </form>
+        </section>
+        
+        <!-- Chat Section -->
+        <section id="chat" class="section" style="display: none;">
+            <h2 class="section-title">Chat</h2>
+            <p>Ish beruvchi yoki xodim bilan shartnoma tuzish uchun suhbat</p>
+            
+            <div class="chat-container">
+                <div class="chat-contacts">
+                    <div class="chat-contact active" data-chat-id="1" onclick="selectChat('1')">
+                        <div class="chat-avatar" style="background-color: #2E86C1;">A</div>
+                        <div>
+                            <div style="font-weight: bold;">Azamat Ismoilov</div>
+                            <div style="font-size: 0.9rem; color: #666;">Duradgor ishi haqida</div>
+                        </div>
+                    </div>
+                    <div class="chat-contact" data-chat-id="2" onclick="selectChat('2')">
+                        <div class="chat-avatar" style="background-color: #1ABC9C;">S</div>
+                        <div>
+                            <div style="font-weight: bold;">Sanobar Olimova</div>
+                            <div style="font-size: 0.9rem; color: #666;">Bolalar enagasi ishi</div>
+                        </div>
+                    </div>
+                    <div class="chat-contact" data-chat-id="3" onclick="selectChat('3')">
+                        <div class="chat-avatar" style="background-color: #E74C3C;">D</div>
+                        <div>
+                            <div style="font-weight: bold;">Dilshod Rahmonov</div>
+                            <div style="font-size: 0.9rem; color: #666;">Dasturchi yollash</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-messages">
+                    <div class="chat-header">
+                        <div id="chatUserName">Azamat Ismoilov</div>
+                        <div style="font-size: 0.8rem; color: #666;">Duradgor ishi haqida</div>
+                    </div>
+                    
+                    <div class="messages-area" id="messagesArea">
+                        <div class="message message-incoming">
+                            Assalomu alaykum! Sizning e'loningizni ko'rdim. Men bu ishni qilishim mumkin.
+                        </div>
+                        <div class="message message-outgoing">
+                            Salom! Qancha haq so'raysiz?
+                        </div>
+                        <div class="message message-incoming">
+                            Ish haqi 2,000,000 so'm. 3 kunda tugataman.
+                        </div>
+                        <div class="message message-outgoing">
+                            Kelishdik. Ertaga soat 10:00 da keling.
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input">
+                        <input type="text" placeholder="Xabar yozing..." id="messageInput" onkeypress="if(event.key === 'Enter') sendMessage()">
+                        <button class="btn btn-primary" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Profile Section -->
+        <section id="profile" class="section" style="display: none;">
+            <div class="profile-header">
+                <div class="profile-avatar">A</div>
+                <div class="profile-info">
+                    <h2>Azizbek Alimov</h2>
+                    <p><i class="fas fa-phone"></i> +998 90 123 45 67</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Toshkent shahri, Yunusobod tumani</p>
+                    <p><i class="fas fa-star" style="color: #F39C12;"></i> Reyting: 4.8 (124 sharh)</p>
+                    
+                    <div class="profile-stats">
+                        <div class="stat-box">
+                            <div class="stat-value">24</div>
+                            <div class="stat-label">E'lonlar</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">18</div>
+                            <div class="stat-label">Bajarilgan ish</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">96%</div>
+                            <div class="stat-label">Muvaffaqiyat</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="balance-card">
+                <h3>Hisobingizdagi mablag'</h3>
+                <div class="balance-amount">
+                    <span id="userBalance">125,000</span> UZS
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-outline" onclick="showTopupModal()">
+                        <i class="fas fa-wallet"></i> Hisobni to'ldirish
+                    </button>
+                    <button class="btn btn-outline">
+                        <i class="fas fa-history"></i> To'lovlar tarixi
+                    </button>
+                </div>
+            </div>
+            
+            <h2 class="section-title">Mening e'lonlarim</h2>
+            <div class="services-grid" id="myJobs">
+                <!-- User's jobs will be loaded by JavaScript -->
+            </div>
+        </section>
+    </main>
+    
+    <!-- Payment Modal (1,000 UZS) -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="section-header">
+                <h2 class="section-title">Koʻrish narxi</h2>
+                <button onclick="closePaymentModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            
+            <div class="payment-amount">1,000 UZS</div>
+            <p class="payment-description" id="paymentServiceTitle"></p>
+            <p class="payment-description">Ish beruvchi ma'lumotlarini ko'rish uchun 1,000 UZS to'lashingiz kerak</p>
+            
+            <div class="balance-card mb-2" style="background: #f8f9fa; color: #333;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>Joriy balans:</div>
+                    <div style="font-size: 1.5rem; font-weight: bold;" id="modalBalance">125,000 UZS</div>
+                </div>
+            </div>
+            
+            <div class="btn-group" style="margin-top: 2rem;">
+                <button class="btn btn-light" onclick="closePaymentModal()" style="flex: 1;">
+                    Bekor qilish
+                </button>
+                <button class="btn btn-primary" onclick="processPayment()" style="flex: 2;">
+                    <i class="fas fa-lock"></i> 1,000 UZS to'lash
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top-up Modal -->
+    <div class="modal" id="topupModal">
+        <div class="modal-content">
+            <div class="section-header">
+                <h2 class="section-title">Hisobni to'ldirish</h2>
+                <button onclick="closeTopupModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            
+            <p class="payment-description">Minimal to'ldirish summasi: 1,000 UZS</p>
+            
+            <div class="topup-options">
+                <div class="topup-option selected" onclick="selectTopupAmount(1000)">
+                    <div class="topup-amount">1,000 UZS</div>
+                    <div style="color: #666; font-size: 0.9rem;">Minimal</div>
+                </div>
+                <div class="topup-option" onclick="selectTopupAmount(5000)">
+                    <div class="topup-amount">5,000 UZS</div>
+                    <div style="color: #666; font-size: 0.9rem;">Tavsiya etiladi</div>
+                </div>
+                <div class="topup-option" onclick="selectTopupAmount(10000)">
+                    <div class="topup-amount">10,000 UZS</div>
+                </div>
+                <div class="topup-option" onclick="selectTopupAmount(50000)">
+                    <div class="topup-amount">50,000 UZS</div>
+                </div>
+            </div>
+            
+            <div class="balance-card mb-2" style="background: #f8f9fa; color: #333;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>Tanlangan summa:</div>
+                    <div style="font-size: 1.5rem; font-weight: bold;" id="selectedAmount">1000</div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" style="width: 100%; padding: 1rem;" onclick="processTopup()">
+                <i class="fas fa-plus-circle"></i> <span id="selectedAmountText">1,000</span> UZS to'ldirish
+            </button>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-section">
+                <h3>Ish Bor</h3>
+                <p>O'zbekistondagi eng yirik ish va xizmatlar platformasi</p>
+                <p>&copy; 2023 Ish Bor. Barcha huquqlar himoyalangan.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Foydali havolalar</h3>
+                <ul>
+                    <li><a href="#">Biz haqimizda</a></li>
+                    <li><a href="#">Foydalanish shartlari</a></li>
+                    <li><a href="#">Maxfiylik siyosati</a></li>
+                    <li><a href="#">Yordam markazi</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Bog'lanish</h3>
+                <ul>
+                    <li><i class="fas fa-phone"></i> +998 71 123 45 67</li>
+                    <li><i class="fas fa-envelope"></i> info@ishbor.uz</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Toshkent shahri</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Demo data
+        const services = [
+            { 
+                id: 1, 
+                title: "Bolalar enagasi", 
+                icon: "fas fa-baby", 
+                price: "800,000 UZS", 
+                description: "Bolalar parvarishi va g'amxo'rligi",
+                hiddenInfo: {
+                    name: "Dilafruz Abdullayeva",
+                    phone: "+998 91 234 56 78",
+                    address: "Toshkent, Mirzo Ulug'bek tumani",
+                    experience: "5 yillik tajriba",
+                    rating: "4.9 ★"
+                }
+            },
+            { 
+                id: 2, 
+                title: "Duradgor", 
+                icon: "fas fa-hammer", 
+                price: "1,200,000 UZS", 
+                description: "Uy-joy ta'mirlash va mebel yasash",
+                hiddenInfo: {
+                    name: "Azamat Ismoilov",
+                    phone: "+998 90 987 65 43",
+                    address: "Toshkent, Yashnobod tumani",
+                    experience: "8 yillik tajriba",
+                    rating: "4.7 ★"
+                }
+            },
+            { 
+                id: 3, 
+                title: "Dasturchi", 
+                icon: "fas fa-code", 
+                price: "5,000,000 UZS", 
+                description: "Web va mobil ilovalar yaratish",
+                hiddenInfo: {
+                    name: "Dilshod Rahmonov",
+                    phone: "+998 93 456 78 90",
+                    address: "Toshkent, Chilonzor tumani",
+                    experience: "6 yillik tajriba",
+                    rating: "5.0 ★"
+                }
+            },
+            { 
+                id: 4, 
+                title: "Sartarosh", 
+                icon: "fas fa-cut", 
+                price: "30,000 UZS", 
+                description: "Soch olish va soch turmagi",
+                hiddenInfo: {
+                    name: "Shahzod Isroilov",
+                    phone: "+998 94 321 09 87",
+                    address: "Toshkent, Yunusobod tumani",
+                    experience: "4 yillik tajriba",
+                    rating: "4.8 ★"
+                }
+            },
+            { 
+                id: 5, 
+                title: "Oshpaz", 
+                icon: "fas fa-utensils", 
+                price: "500,000 UZS", 
+                description: "To'y va bazmlar uchun ovqat tayyorlash",
+                hiddenInfo: {
+                    name: "Mansur Qodirov",
+                    phone: "+998 97 654 32 10",
+                    address: "Toshkent, Shayxontohur tumani",
+                    experience: "10 yillik tajriba",
+                    rating: "4.9 ★"
+                }
+            },
+            { 
+                id: 6, 
+                title: "Haydovchi", 
+                icon: "fas fa-car", 
+                price: "2,500,000 UZS", 
+                description: "Shaxsiy haydovchi yoki taksi",
+                hiddenInfo: {
+                    name: "Javohir Toshpulatov",
+                    phone: "+998 99 876 54 32",
+                    address: "Toshkent, Mirobod tumani",
+                    experience: "7 yillik tajriba",
+                    rating: "4.6 ★"
+                }
+            },
+            { 
+                id: 7, 
+                title: "Elektrik", 
+                icon: "fas fa-bolt", 
+                price: "400,000 UZS", 
+                description: "Elektr tarmoqlarini ta'mirlash",
+                hiddenInfo: {
+                    name: "Rustam Karimov",
+                    phone: "+998 95 123 45 67",
+                    address: "Toshkent, Sergeli tumani",
+                    experience: "12 yillik tajriba",
+                    rating: "4.8 ★"
+                }
+            },
+            { 
+                id: 8, 
+                title: "Suvchi", 
+                icon: "fas fa-faucet", 
+                price: "350,000 UZS", 
+                description: "Suv o'tkazish tizimlari",
+                hiddenInfo: {
+                    name: "Fayzullo Samadov",
+                    phone: "+998 90 555 44 33",
+                    address: "Toshkent, Olmazor tumani",
+                    experience: "9 yillik tajriba",
+                    rating: "4.7 ★"
+                }
+            },
+        ];
+        
+        let myJobs = [
+            { 
+                id: 1, 
+                title: "Uy ta'mirlash", 
+                icon: "fas fa-home", 
+                price: "2,500,000 UZS", 
+                description: "Yotoqxona ta'mirlash",
+                hiddenInfo: {
+                    name: "Azizbek Alimov",
+                    phone: "+998 90 123 45 67",
+                    address: "Toshkent, Yunusobod tumani",
+                    experience: "Kuniga 8 soat",
+                    rating: "4.8 ★"
+                }
+            },
+            { 
+                id: 2, 
+                title: "Dasturiy ta'minot", 
+                icon: "fas fa-laptop-code", 
+                price: "8,000,000 UZS", 
+                description: "Online do'kon yaratish",
+                hiddenInfo: {
+                    name: "Azizbek Alimov",
+                    phone: "+998 90 123 45 67",
+                    address: "Toshkent, Yunusobod tumani",
+                    experience: "Loyiha asosida",
+                    rating: "4.8 ★"
+                }
+            },
+            { 
+                id: 3, 
+                title: "Mebel yasash", 
+                icon: "fas fa-couch", 
+                price: "3,500,000 UZS", 
+                description: "Kvartira uchun mebel",
+                hiddenInfo: {
+                    name: "Azizbek Alimov",
+                    phone: "+998 90 123 45 67",
+                    address: "Toshkent, Yunusobod tumani",
+                    experience: "2 hafta ichida",
+                    rating: "4.8 ★"
+                }
+            },
+        ];
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadServices();
+            loadMyJobs();
+            
+            // Mobile menu toggle
+            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+                document.getElementById('mainNav').classList.toggle('active');
+            });
+            
+            // Form submission
+            document.getElementById('jobForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Yangi e'lon yaratish
+                const newJob = {
+                    id: myJobs.length + 1,
+                    title: document.querySelector('#jobForm input[type="text"]').value,
+                    price: document.querySelector('#jobForm input[type="number"]').value + " UZS",
+                    description: document.querySelector('#jobForm textarea').value,
+                    icon: "fas fa-briefcase",
+                    hiddenInfo: {
+                        name: "Azizbek Alimov",
+                        phone: "+998 90 123 45 67",
+                        address: "Toshkent, Yunusobod tumani",
+                        experience: "Yangi e'lon",
+                        rating: "4.8 ★"
+                    }
+                };
+                
+                myJobs.unshift(newJob);
+                loadMyJobs();
+                
+                alert('E\'lon muvaffaqiyatli joylandi!');
+                switchSection('profile');
+            });
+            
+            // Show home section by default
+            switchSection('home');
+            
+            // Update modal balance
+            updateModalBalance();
+            
+            // Chatni boshlang'ichda faollashtirmaymiz (to'lov qilinmaguncha)
+            document.querySelectorAll('.chat-contact').forEach(contact => {
+                contact.onclick = function() {
+                    alert('Chatdan foydalanish uchun avval e\'lon beruvchi ma\'lumotlarini ko\'rish uchun to\'lov qilishingiz kerak.');
+                };
+            });
+        });
+        
+        // Function to load services
+        function loadServices() {
+            const servicesPreview = document.getElementById('servicesPreview');
+            const allServices = document.getElementById('allServices');
+            
+            // Clear previous content
+            servicesPreview.innerHTML = '';
+            allServices.innerHTML = '';
+            
+            // Add services to preview (only 4)
+            services.slice(0, 4).forEach(service => {
+                servicesPreview.innerHTML += createServiceCard(service, false);
+            });
+            
+            // Add all services
+            services.forEach(service => {
+                allServices.innerHTML += createServiceCard(service, false);
+            });
+        }
+        
+        // Function to load user's jobs
+        function loadMyJobs() {
+            const myJobsContainer = document.getElementById('myJobs');
+            myJobsContainer.innerHTML = '';
+            
+            myJobs.forEach(job => {
+                myJobsContainer.innerHTML += createServiceCard(job, true);
+            });
+        }
+        
+        // Function to create service card HTML
+        function createServiceCard(item, isMyJob = false) {
+            const hiddenInfoHTML = item.hiddenInfo ? `
+                <div class="service-hidden-info">
+                    <div class="hidden-info-label">Ism:</div>
+                    <div class="hidden-info-value">${item.hiddenInfo.name}</div>
+                    
+                    <div class="hidden-info-label">Telefon:</div>
+                    <div class="hidden-info-value">${item.hiddenInfo.phone}</div>
+                    
+                    <div class="hidden-info-label">Manzil:</div>
+                    <div class="hidden-info-value">${item.hiddenInfo.address}</div>
+                    
+                    <div class="hidden-info-label">Ish vaqti:</div>
+                    <div class="hidden-info-value">${item.hiddenInfo.experience}</div>
+                    
+                    <div class="hidden-info-label">Reyting:</div>
+                    <div class="hidden-info-value">${item.hiddenInfo.rating}</div>
+                </div>
+            ` : '';
+            
+            const actionButtons = isMyJob ? `
+                <div class="job-actions">
+                    <button class="btn btn-edit" onclick="editJob(${item.id})">
+                        <i class="fas fa-edit"></i> Tahrirlash
+                    </button>
+                    <button class="btn btn-delete" onclick="deleteJob(${item.id})">
+                        <i class="fas fa-trash"></i> O'chirish
+                    </button>
+                </div>
+            ` : '';
+            
+            const onClick = isMyJob ? `viewServiceDetails(${item.id}, true)` : `viewServiceDetails(${item.id})`;
+            
+            return `
+                <div class="service-card ${isMyJob ? 'my-job' : ''}" data-id="${item.id}" onclick="${onClick}">
+                    <div class="service-icon">
+                        <i class="${item.icon}"></i>
+                    </div>
+                    <h3 class="service-title">${item.title}</h3>
+                    <p>${item.description}</p>
+                    <div class="service-price">${item.price}</div>
+                    ${hiddenInfoHTML}
+                    ${actionButtons}
+                </div>
+            `;
+        }
+        
+        // Function to update modal balance
+        function updateModalBalance() {
+            const balance = document.getElementById('userBalance').textContent;
+            document.getElementById('modalBalance').textContent = balance + ' UZS';
+        }
+        
+        // Override showPaymentModal to update service title
+        const originalShowPaymentModal = window.showPaymentModal;
+        window.showPaymentModal = function(serviceId, serviceTitle) {
+            originalShowPaymentModal(serviceId, serviceTitle);
+            document.getElementById('paymentServiceTitle').textContent = `"${serviceTitle}" uchun`;
+            updateModalBalance();
+        };
+        
+        // Override processTopup to update header balance
+        const originalProcessTopup = window.processTopup;
+        window.processTopup = function() {
+            originalProcessTopup();
+            updateModalBalance();
+        };
+        
+        // Override selectTopupAmount to update button text
+        const originalSelectTopupAmount = window.selectTopupAmount;
+        window.selectTopupAmount = function(amount) {
+            originalSelectTopupAmount(amount);
+            document.getElementById('selectedAmountText').textContent = amount.toLocaleString('uz-UZ');
+        };
+    </script>
+</body>
+</html>
