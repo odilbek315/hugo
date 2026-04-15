@@ -1,0 +1,101 @@
+[
+  {
+    "inputs": [
+      { "internalType": "uint8", "name": "propertyType", "type": "uint8" },
+      { "internalType": "string", "name": "location", "type": "string" },
+      { "internalType": "uint256", "name": "area", "type": "uint256" },
+      { "internalType": "string", "name": "metadataURI", "type": "string" }
+    ],
+    "name": "registerProperty",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "propertyId", "type": "uint256" },
+      { "internalType": "address", "name": "user", "type": "address" }
+    ],
+    "name": "verifyOwner",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "propertyId", "type": "uint256" },
+      { "internalType": "address", "name": "newOwner", "type": "address" },
+      { "internalType": "string", "name": "note", "type": "string" }
+    ],
+    "name": "transferProperty",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "propertyId", "type": "uint256" },
+      { "internalType": "string", "name": "documentHash", "type": "string" }
+    ],
+    "name": "addDocumentHash",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "propertyId", "type": "uint256" },
+      { "internalType": "address", "name": "viewer", "type": "address" }
+    ],
+    "name": "grantAccess",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "propertyId", "type": "uint256" },
+      { "internalType": "address", "name": "viewer", "type": "address" }
+    ],
+    "name": "revokeAccess",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "propertyId", "type": "uint256" },
+      { "internalType": "address", "name": "viewer", "type": "address" }
+    ],
+    "name": "canAccess",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "propertyId", "type": "uint256" }],
+    "name": "getPropertyDocuments",
+    "outputs": [{ "internalType": "string[]", "name": "", "type": "string[]" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "propertyId", "type": "uint256" }],
+    "name": "getPropertyHistory",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "from", "type": "address" },
+          { "internalType": "address", "name": "to", "type": "address" },
+          { "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+          { "internalType": "string", "name": "note", "type": "string" }
+        ],
+        "internalType": "struct RealEstateRegistry.TransferRecord[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

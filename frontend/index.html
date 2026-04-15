@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real Estate Blockchain DApp</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Ko'chmas Mulk Blockchain Tizimi</h1>
+      <p class="hint">Backend URL: <span id="apiUrlLabel"></span></p>
+
+      <section class="card">
+        <h2>Mulk egasini tekshirish</h2>
+        <form id="verifyForm">
+          <input id="verifyPropertyId" type="number" placeholder="Property ID" required />
+          <input id="verifyOwnerAddress" type="text" placeholder="Owner wallet address" required />
+          <button type="submit">Tekshirish</button>
+        </form>
+        <p id="verifyResult"></p>
+      </section>
+
+      <section class="card">
+        <h2>Mulk tarixini ko'rish</h2>
+        <form id="historyForm">
+          <input id="historyPropertyId" type="number" placeholder="Property ID" required />
+          <button type="submit">Tarixni olish</button>
+        </form>
+        <pre id="historyResult"></pre>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>

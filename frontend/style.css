@@ -1,0 +1,56 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f2f5f9;
+  color: #102a43;
+}
+
+.container {
+  max-width: 920px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+.hint {
+  color: #486581;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.12);
+  margin: 18px 0;
+}
+
+form {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+input {
+  min-width: 230px;
+  padding: 10px;
+}
+
+button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #0052cc;
+  color: #fff;
+}
+
+pre {
+  background: #102a43;
+  color: #e4edf5;
+  padding: 14px;
+  border-radius: 10px;
+  overflow-x: auto;
+}
